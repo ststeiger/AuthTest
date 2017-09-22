@@ -83,8 +83,8 @@ namespace AuthTest.Controllers
             htmlTemplate = htmlTemplate.Replace("@title", "Access denied (unauthorized)");
             htmlTemplate = htmlTemplate.Replace("@body", "<h1>Unauthorized</h1>");
 
-            // var foo = new StackOverflower();
-            // System.Console.WriteLine(foo.MyText);
+            var foo = new StackOverflower();
+            System.Console.WriteLine(foo.MyText);
             // throw new Exception("foo");
 
             this.m_MailService.SendMail("stefan.steiger@rsnweb.ch", "Stefan Steiger"

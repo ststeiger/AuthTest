@@ -177,7 +177,9 @@ namespace AuthTest
             // System.Console.WriteLine("first chance");
         }
 
-
+        // Yes from CLR 2.0 stack overflow is considered a non-recoverable situation. So the runtime still shut down the process.
+        // https://stackoverflow.com/questions/1599219/c-sharp-catch-a-stack-overflow-exception/1599238#1599238
+        [System.Runtime.ExceptionServices.HandleProcessCorruptedStateExceptions]
         private static void CurrentDomain_UnhandledException(object sender, System.UnhandledExceptionEventArgs e)
         {
             System.Console.WriteLine("appdomain - unhandled");

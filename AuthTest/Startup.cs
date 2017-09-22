@@ -341,6 +341,23 @@ namespace AuthTest
             );
 
 
+            //app.UseExceptionHandler(
+            //    delegate(IApplicationBuilder builder)
+            //    {
+            //        builder.Run(
+            //        context =>
+            //            {
+            //                var lf = builder.ApplicationServices.GetService<ILoggerFactory>();
+            //                var logger = lf.CreateLogger("myExceptionHandlerLogger");
+            //                logger.LogDebug("I am a debug message");
+            //                return null;
+            //            }
+            //        );
+            //    }
+            //);
+
+
+
             if (Microsoft.AspNetCore.Hosting.HostingEnvironmentExtensions.IsDevelopment(env))
             {
                 app.UseDeveloperExceptionPage();
