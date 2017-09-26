@@ -28,14 +28,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\js\Crap.ts" />
-    <TypeScriptCompile Include="wwwroot\js\IShape.ts" />
-    <TypeScriptCompile Include="wwwroot\js\Circle.ts" />
-    <TypeScriptCompile Include="wwwroot\js\quantal.ts" />
-    <TypeScriptCompile Include="wwwroot\js\quantalquetzal.ts" />
-    <TypeScriptCompile Include="wwwroot\js\quetzal.ts" />
-    <TypeScriptCompile Include="wwwroot\js\Triangle.ts" />
-    <TypeScriptCompile Include="wwwroot\js\TestShape.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\Crap.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\IShape.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\Circle.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\quantal.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\quantalquetzal.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\quetzal.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\Triangle.ts" />
+    <TypeScriptCompile Include="wwwroot\js\modularize\TestShape.ts" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
