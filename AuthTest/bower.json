@@ -5,6 +5,15 @@
     "bootstrap": "3.3.7",
     "jquery": "2.2.0",
     "jquery-validation": "1.14.0",
-    "jquery-validation-unobtrusive": "3.2.6"
+    "jquery-validation-unobtrusive": "3.2.6",
+    "requirejs": "2.3.5",
+    "text": "requirejs-text#2.0.15",
+    "requirejs-plugins": "v1.0.3",
+    "domReady": "requirejs-domready#2.0.1",
+    "requirejs-dplugins": "0.6.0",
+    "i18n": "requirejs-i18n#2.0.6"
+  },
+  "resolutions": {
+    "requirejs": "2.3.5"
   }
 }

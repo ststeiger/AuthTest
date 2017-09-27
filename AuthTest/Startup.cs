@@ -376,7 +376,45 @@ namespace AuthTest
             // https://github.com/aspnet/Security/issues/1310
             // AppContext.TargetFrameworkName
 
-            app.UseStaticFiles();
+
+            // https://docs.microsoft.com/en-us/aspnet/core/performance/caching/middleware?tabs=aspnetcore2x
+
+
+
+            // https://docs.microsoft.com/en-us/aspnet/core/performance/caching/response
+            // https://stackoverflow.com/questions/6601553/execute-rewiter-http-module-before-outputcache
+            // https://madskristensen.net/post/use-if-modified-since-header-in-aspnet
+            // https://andrewlock.net/adding-cache-control-headers-to-static-files-in-asp-net-core/
+            // https://stackoverflow.com/questions/35458737/implement-http-cache-etag-in-asp-net-core-web-api
+            // https://www.codeproject.com/Tips/1197510/Cache-headers-for-MVC-File-Action-Result-ASP-NET-C
+            // http://asp.net-hacker.rocks/2016/08/04/add-http-header-to-static-files-in-aspnetcore.html
+            // http://www.ryadel.com/en/asp-net-core-static-files-cache-control-using-http-headers/
+            // https://www.strathweb.com/2012/06/extending-your-asp-net-web-api-responses-with-useful-metadata/
+            // https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = ctx =>
+                {
+                    const int durationInSeconds = 60 * 60 * 24;
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] =
+                        "public,max-age=" + durationInSeconds;
+
+                    // string etag = ETagGenerator.GetETag(ctx.Context.Request.Path.ToString()
+                    //     , System.Text.Encoding.UTF8.GetBytes("content"));
+
+                    // ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.ETag] = etag;
+
+                    // Microsoft.Net.Http.Headers.HeaderNames.Pragma
+                    // Microsoft.Net.Http.Headers.HeaderNames.CacheControl
+                    // Microsoft.Net.Http.Headers.HeaderNames.ContentDisposition
+                    // Microsoft.Net.Http.Headers.HeaderNames.Age
+                    // Microsoft.Net.Http.Headers.HeaderNames.
+
+                    //Microsoft.Net.Http.Headers.HeaderNames.LastModified
+                    // Microsoft.Net.Http.Headers.HeaderNames.Expires
+
+                }
+            });
 
             app.UseMvc( 
                 delegate(Microsoft.AspNetCore.Routing.IRouteBuilder routes)
