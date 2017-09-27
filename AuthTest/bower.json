@@ -11,7 +11,8 @@
     "requirejs-plugins": "v1.0.3",
     "domReady": "requirejs-domready#2.0.1",
     "requirejs-dplugins": "0.6.0",
-    "i18n": "requirejs-i18n#2.0.6"
+    "i18n": "requirejs-i18n#2.0.6",
+    "font-awesome": "Font-Awesome#v4.7.0"
   },
   "resolutions": {
     "requirejs": "2.3.5"

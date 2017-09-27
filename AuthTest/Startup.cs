@@ -33,21 +33,29 @@ namespace AuthTest
 {
 
 
+    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection
     public class Startup : Microsoft.AspNetCore.Hosting.IStartup
     {
-
+        private IHostingEnvironment HostingEnvironment { get; set; }
         public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
+        private Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory;
+        private IApplicationBuilder Application;
 
-        public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration)
+
+        public Startup(IHostingEnvironment env, Microsoft.Extensions.Configuration.IConfiguration config
+            ,Microsoft.Extensions.Logging.ILoggerFactory logFactory
+            )
         {
-            Configuration = configuration;
+            this.HostingEnvironment = env;
+            this.Configuration = config;
+            this.LoggerFactory = logFactory;
         } // End Constructor 
 
 
         IServiceProvider Microsoft.AspNetCore.Hosting.IStartup.ConfigureServices(
             Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {
-            
+
             // // https://stackoverflow.com/questions/45781873/is-net-core-2-0-logging-broken
             //services.AddLogging( 
             //    delegate(ILoggingBuilder builder)
@@ -59,14 +67,18 @@ namespace AuthTest
 
             //    }
             //);
-            
+
+            // Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
+            //    .Configure<Mail.SmtpConfig>(services, Configuration.GetSection("Smtp"));
+
+            services.Configure<Mail.SmtpConfig>(Configuration.GetSection("Smtp"));
+
+
+
+            services.AddSingleton<Services.IPathProvider, Services.PathProvider>();
 
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor
                 , Microsoft.AspNetCore.Http.HttpContextAccessor>();
-
-
-            Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
-                .Configure<Mail.SmtpConfig>(services, Configuration.GetSection("Smtp"));
 
             services.AddTransient<AuthTest.Services.IMailService, AuthTest.Services.MailService>();
 
@@ -271,7 +283,7 @@ namespace AuthTest
             // throw new NotImplementedException();
         }
 
-        IApplicationBuilder Application;
+        
 
         void Microsoft.AspNetCore.Hosting.IStartup.Configure(IApplicationBuilder app)
         {
@@ -288,8 +300,12 @@ namespace AuthTest
 
             Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext = app.ApplicationServices.
                 GetRequiredService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
+            
 
-            this.ConfigureMapping(app, loggerFactory, mailService, env, httpContext);
+            Services.IPathProvider pathProvider = app.ApplicationServices.
+                GetRequiredService<Services.IPathProvider>();
+
+            this.ConfigureMapping(app, loggerFactory, mailService, env, httpContext, pathProvider);
         } // End Function Configure 
 
 
@@ -298,7 +314,8 @@ namespace AuthTest
             , Microsoft.Extensions.Logging.ILoggerFactory loggerFactory
             , Services.IMailService mailService
             , Microsoft.AspNetCore.Hosting.IHostingEnvironment env
-            , Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext)
+            , Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext
+            , Services.IPathProvider pathProvider)
         {
             string virtual_directory = "/Virt_DIR";
             virtual_directory = "/";
@@ -308,13 +325,13 @@ namespace AuthTest
                 virtual_directory = virtual_directory.Substring(0, virtual_directory.Length - 1);
 
             if (string.IsNullOrWhiteSpace(virtual_directory))
-                ConfigureMapped(app, loggerFactory, mailService, env, httpContext); // Don't map if you don't have to 
+                ConfigureMapped(app, loggerFactory, mailService, env, httpContext, pathProvider); // Don't map if you don't have to 
             else
                 // app.Map("/Virt_DIR", (mappedApp) => Configure1(mappedApp, env, loggerFactory));
                 app.Map(virtual_directory, 
                     delegate (IApplicationBuilder mappedApp)
                     {
-                        ConfigureMapped(mappedApp, loggerFactory, mailService, env, httpContext);
+                        ConfigureMapped(mappedApp, loggerFactory, mailService, env, httpContext, pathProvider);
                     }
                 );
 
@@ -322,11 +339,13 @@ namespace AuthTest
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void ConfigureMapped(Microsoft.AspNetCore.Builder.IApplicationBuilder app
-            ,Microsoft.Extensions.Logging.ILoggerFactory loggerFactory
-            ,Services.IMailService mailService
+        public void ConfigureMapped(
+              Microsoft.AspNetCore.Builder.IApplicationBuilder app
+            , Microsoft.Extensions.Logging.ILoggerFactory loggerFactory
+            , Services.IMailService mailService
             , Microsoft.AspNetCore.Hosting.IHostingEnvironment env
-            , Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext)
+            , Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext
+            , Services.IPathProvider pathProvider)
         {
 
             // Microsoft.Extensions.Logging.ConsoleLoggerExtensions.AddConsole(loggerFactory
@@ -393,27 +412,41 @@ namespace AuthTest
             // https://www.owasp.org/index.php/.NET_Security_Cheat_Sheet
             app.UseStaticFiles(new StaticFileOptions
             {
-                OnPrepareResponse = ctx =>
+
+
+                OnPrepareResponse = delegate(Microsoft.AspNetCore.StaticFiles.StaticFileResponseContext ctx)
                 {
-                    const int durationInSeconds = 60 * 60 * 24;
-                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] =
-                        "public,max-age=" + durationInSeconds;
+                    // const int durationInSeconds = 60 * 60 * 24;
+                    // ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "public,max-age=" + durationInSeconds.ToString();
 
-                    // string etag = ETagGenerator.GetETag(ctx.Context.Request.Path.ToString()
-                    //     , System.Text.Encoding.UTF8.GetBytes("content"));
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = "no-cache, no-store, must-revalidate, private, max-age=0";
+                    // https://stackoverflow.com/questions/3096888/standard-for-adding-multiple-values-of-a-single-http-header-to-a-request-or-resp
+                    //ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Expires] = "Tue, 01 Jan 1980 1:00:00 GMT, 0";
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Expires] = "0";
+                    ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] = "no-cache";
 
-                    // ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.ETag] = etag;
+                    if (ctx.Context.Request.Path.HasValue)
+                    {
+                        System.IO.FileInfo fi = new System.IO.FileInfo(pathProvider.MapPath(ctx.Context.Request.Path));
+                        if (fi.Exists)
+                        {
+                            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+                            string lm = fi.LastWriteTimeUtc.ToString("ddd', 'dd' 'MMM' 'yyyy' 'HH':'mm':'ss' GMT'", System.Globalization.CultureInfo.InvariantCulture);
+                            ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.LastModified] = lm;
 
-                    // Microsoft.Net.Http.Headers.HeaderNames.Pragma
-                    // Microsoft.Net.Http.Headers.HeaderNames.CacheControl
+                            // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag
+                            string etag = ETagGenerator.GetETag(ctx.Context.Request.Path.Value, System.Text.Encoding.UTF8.GetBytes(lm));
+                            ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.ETag] = etag;
+                        } // End if (fi.Exists) 
+
+                    } // End if (ctx.Context.Request.Path.HasValue) 
+
+
                     // Microsoft.Net.Http.Headers.HeaderNames.ContentDisposition
                     // Microsoft.Net.Http.Headers.HeaderNames.Age
                     // Microsoft.Net.Http.Headers.HeaderNames.
 
-                    //Microsoft.Net.Http.Headers.HeaderNames.LastModified
-                    // Microsoft.Net.Http.Headers.HeaderNames.Expires
-
-                }
+                } // End OnPrepareResponse 
             });
 
             app.UseMvc( 
