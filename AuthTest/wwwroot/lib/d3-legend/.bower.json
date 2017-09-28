@@ -1,16 +1,20 @@
 {
   "name": "d3-legend",
-  "main": "d3-legend.min.js",
-  "version": "2.24.0",
-  "homepage": "https://github.com/susielu/d3-legend",
-  "keywords": [
-    "d3",
-    "legend",
-    "data",
-    "visualization"
-  ],
+  "version": "1.0.0",
+  "homepage": "https://github.com/arpitnarechania/d3-legend",
   "authors": [
-    "Susie Lu"
+    "Arpit Narechania <arpitnarechania@gmail.com>"
+  ],
+  "description": "Open Source JavaScript Library to render Legends using D3.js",
+  "main": "",
+  "keywords": [
+    "legend",
+    "key",
+    "d3",
+    "d3.js",
+    "visualization",
+    "charts",
+    "open-source"
   ],
   "license": "MIT",
   "ignore": [
@@ -20,17 +24,14 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "d3": "^4.3.0"
-  },
-  "_release": "2.24.0",
+  "_release": "1.0.0",
   "_resolution": {
     "type": "version",
-    "tag": "v2.24.0",
-    "commit": "a0daad1eae28ae17f0bd843ad10ad380793bbef7"
+    "tag": "v1.0.0",
+    "commit": "194c882d0491331ea0308e23d87ccf9d950d9e08"
   },
-  "_source": "https://github.com/susielu/d3-legend.git",
-  "_target": "v2.24.0",
-  "_originalSource": "d3-legend",
+  "_source": "https://github.com/arpitnarechania/d3js-legend.git",
+  "_target": "v1.0.0",
+  "_originalSource": "d3js-legend",
   "_direct": true
 }

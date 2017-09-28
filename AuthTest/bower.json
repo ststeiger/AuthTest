@@ -16,7 +16,6 @@
     "d3": "v4.10.2",
     "d3-tip": "v0.8.0-alpha.1",
     "d3-jetpack": "v2.0.9",
-    "d3-legend": "v2.24.0",
     "d3-cloud": "d3.layout.cloud#v1.2.4",
     "d3.compose": "v0.15.19",
     "c3": "v0.4.18",
@@ -29,7 +28,9 @@
     "d3-funnel": "v1.1.1",
     "d3-timeline": "v0.0.5",
     "d3.promise": "v2.0.0",
-    "d3-format": "v1.2.0"
+    "d3-format": "v1.2.0",
+    "d3-selection": "v1.1.0",
+    "d3-legend": "d3js-legend#v1.0.0"
   },
   "resolutions": {
     "requirejs": "2.3.5",

@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <style type="text/css">
+        html, body {
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #myDiv {
+            display: block;
+            width: 700px;
+            height: 700px;
+        }
+
+        #myDiv2 {
+            display: block;
+            width: 900px;
+            height: 600px;
+        }
+
+        svg {
+            background-color: transparent !important;
+        }
+
+        #myDiv, #myDiv2 {
+            background-color: hotpink;
+        }
+
+    </style>
+
+
+    <!--
+    <script type="text/javascript" src="scripts/plotly/1_30_1/plotly.min.js" charset="utf-8"></script>
+    -->
+    
+    <script type="text/javascript" src="scripts/plotly/1_30_1/plotly-basic.js" charset="utf-8"></script>
+</head>
+<body>
+
+    <div id="myDiv"></div>
+    <br />
+    <div id="myDiv2"></div>
+
+    <script type="text/javascript">
+
+        async function main() {
+            console.log(Plotly.version);
+
+            // https://plot.ly/javascript/heatmaps/
+            var data = [
+                {
+                    z: [[1, 20, 30], [20, 1, 60], [30, 60, 1]],
+                    type: 'heatmap'
+                }
+            ];
+
+            Plotly.newPlot('myDiv', data);
+
+            var data2 = [
+                {
+                    z: [[1, 20, 30, 50, 1], [20, 1, 60, 80, 30], [30, 60, 1, -10, 20]],
+                    x: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                    y: ['Morning', 'Afternoon', 'Evening'],
+                    type: 'heatmap'
+                }
+            ];
+
+            Plotly.newPlot('myDiv2', data2);
+        }
+
+        main();
+    </script>
+
+</body>
+</html>

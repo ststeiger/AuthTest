@@ -1,62 +1,77 @@
-# d3-legend
+# D3-Legend
 
-Full documentation: [http://d3-legend.susielu.com](http://d3-legend.susielu.com)
+**D3-Legend** is an open-source JavaScript library for rendering custom legends using the D3.js library.
 
-## Looking for compatibility with d3 v3?
-- You can see the code for the d3 legend that works with d3 v3 in the [v3 branch](https://github.com/susielu/d3-legend/tree/v3)
-- [Documentation](http://d3-legend-v3.susielu.com) for the v3 version of the legend
+Check out an [Example](https://arpitnarechania.github.io/d3-legend/) where you can test various configuration options.
 
-## d3-legend v4 updates (npm version 2.0.0 and higher)
-- Flattened naming for accessing functions
-    - d3.legend.color => d3.legendColor
-    - d3.legend.size => d3.legendSize
-    - d3.legend.symbol => d3.legendSymbol
-- NPM package no longer binds to global d3, is now just an object with the three legend functions
+# Installation
 
-## Usage
-
-### Using just the minified file
-
-You must include the [d3 library](http://d3js.org/) before including the legend file. Then you can simply add the compiled js file to your website:
-
-- d3-legend.min.js
-- d3-legend.js (Human readable version)
-
-### Using CDN
-
-You can also add latest version of [d3-legend hosted on cdnjs](https://cdnjs.com/libraries/d3-legend).
-
-### Using npm
-
-You can add the d3 legend as a node module by running:
-
-`npm i d3-svg-legend -S`
-
-To use the version compatible with d3v3 run:
-`npm i d3-svg-legend@1.x -S`
-
-Using the import syntax `import legend from 'd3-svg-legend'` gives access to the three legend types as an object. You can also import them independently for example `import { legendColor } from 'd3-svg-legend'`
+Download d3-legend using bower.
 
 ```
-var svg = d3.select("#svg-color-quant");
+bower install d3-legend --save
+```
 
-var quantize = d3.scaleQuantize()
-    .domain([ 0, 0.15 ])
-    .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+To use this library then, simply include d3.js, legend.js and legend.css:
 
-svg.append("g")
-  .attr("class", "legendQuant")
-  .attr("transform", "translate(20,20)");
+``` html
+<script src="/path/to/d3.min.js"></script>
+<script src="/path/to/dist/legend.css"></script>
+<script src="/path/to/dist/legend.js"></script>
+```
 
-var colorLegend = d3.legendColor()
-    .labelFormat(d3.format(".2f"))
-    .useClass(true)
-    .scale(quantize);
+# Usage
 
-svg.select(".legendQuant")
-  .call(colorLegend);
+To use this library, you must create a container element and instantiate a new
+Legend:
+
+```html
+<div id="legend"></div>
+```
+
+Setting chart parameters
+``` javascript
+
+		Legend({
+		    length : 600,
+		    thickness: 50,
+            min_color : '#ffffff',
+            max_color : '#3498db',
+            max_value : 500,
+            min_value : 0,
+            margin : {top:30,bottom:50,left:30,right:50},
+            orientation : 'vertical',
+            axis_position : 'right',
+            axis_tick_orientation : 'right',
+            min_value_at_start : false
+		});
 
 ```
 
-## Feedback
-I would love to hear from you about any additional features that would be useful, please say hi on twitter [@DataToViz](https://www.twitter.com/DataToViz).
+## Options
+
+| Option                     | Description                                                               | Type     | Options
+| -------------------------- | ------------------------------------------------------------------------- | -------- | ------------------------- |
+| `width`                    | The width of the legend in pixels                                         | number   | `200`                     |
+| `height`                   | The height of the legend in pixels                                        | number   | `300`                     |
+| `margin.top`               | The top margin                                                            | number   | `10`                      |
+| `margin.bottom`            | The bottom margin                                                         | number   | `10`                      |
+| `margin.left`              | The left margin                                                           | number   | `10`                      |
+| `margin.right`             | The right margin                                                          | number   | `10`                      |
+| `max_color`                | The maximum of the color range                                            | string   | `'green'`                 |
+| `min_color`                | The minimum of the color range                                            | string   | `'white'`                 |
+| `max_value`                | The maximum value                                                         | number   | `100`                     |
+| `min_value`                | The minimum value                                                         | number   | `0`                       |
+| `orientation`              | The legend orientation                                                    | string   | `'vertical'`/`'horizontal'`   |
+| `axis_position`            | The position of the axis                                                  | string   | `'left'`/`'right'`/`'bottom'`/`'top'`|
+| `axis_tick_orientation`    | The position of the axis ticks                                            | string   | `'left'`/`'right'`/`'bottom'`/`'top'`|
+| `min_value_at_start`       | Whether legend's minimum value is to be at the start or end               | bool     | `true`                       |
+
+# Author
+
+Arpit Narechania
+arpitnarechania@gmail.com
+
+# License
+
+MIT license.

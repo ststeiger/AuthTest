@@ -413,7 +413,6 @@ namespace AuthTest
             app.UseStaticFiles(new StaticFileOptions
             {
 
-
                 OnPrepareResponse = delegate(Microsoft.AspNetCore.StaticFiles.StaticFileResponseContext ctx)
                 {
                     // const int durationInSeconds = 60 * 60 * 24;
