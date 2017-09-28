@@ -1,0 +1,15 @@
+{
+  "name": "d3-funnel",
+  "homepage": "https://github.com/jakezatecky/d3-funnel",
+  "version": "1.1.1",
+  "_release": "1.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.1",
+    "commit": "08822a4b05f351892d77884790b086765d7a9ee0"
+  },
+  "_source": "https://github.com/jakezatecky/d3-funnel.git",
+  "_target": "v1.1.1",
+  "_originalSource": "d3-funnel",
+  "_direct": true
+}

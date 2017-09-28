@@ -1,0 +1,41 @@
+{
+  "name": "d3.facedetection",
+  "version": "3.0.1",
+  "authors": [
+    "Nick Randall <nick.randall@domo.com>"
+  ],
+  "description": "Face detection for SVG, HTML, Canvas and Video",
+  "main": "dist/d3.facedetection.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "d3",
+    "ccv",
+    "face",
+    "detection"
+  ],
+  "license": "MIT",
+  "homepage": "www.domo.com",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "^3.4.0"
+  },
+  "_release": "3.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.0.1",
+    "commit": "cb4fbdc12bf74728a5c246ffe48748f8472f3a85"
+  },
+  "_source": "https://github.com/nicksrandall/d3.facedetection.git",
+  "_target": "v3.0.1",
+  "_originalSource": "d3.facedetection",
+  "_direct": true
+}

@@ -1,0 +1,65 @@
+{
+  "name": "d3.compose",
+  "version": "0.15.15",
+  "description": "Compose complex, data-driven visualizations from reusable charts and components with d3",
+  "main": "build/d3.compose.js",
+  "jsnext:main": "index",
+  "scripts": {
+    "pretest": "npm run build",
+    "test": "tape test/**/*-test.js | faucet && eslint src test index.js",
+    "build": "rimraf build && mkdirp build && rollup -c -o build/d3.compose.js -- index.js & gulp css",
+    "uglify": "cd build && uglifyjs d3.compose.js --source-map d3.compose.min.js.map --comments -c -m -o d3.compose.min.js",
+    "docs": "rimraf _docs && yuidoc && gulp docs",
+    "preversion": "npm test",
+    "version": "npm run build && npm run uglify && gulp version:bower && git add -A",
+    "postversion": "git push && git push --tags",
+    "postpublish": "gulp publish:github"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CSNW/d3.compose.git"
+  },
+  "keywords": [
+    "d3.compose",
+    "d3-compose",
+    "d3",
+    "compose",
+    "chart"
+  ],
+  "author": "Tim Hall <timhall@cornerstonenw.com> (https://github.com/timhall)",
+  "contributors": [
+    "CSNW"
+  ],
+  "bugs": {
+    "url": "https://github.com/CSNW/d3.compose/issues"
+  },
+  "homepage": "https://github.com/CSNW/d3.compose",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^3.5.8"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "faucet": "0.0.1",
+    "github": "^0.2.4",
+    "gulp": "^3.9.0",
+    "gulp-bump": "^1.0.0",
+    "gulp-copy": "0.0.2",
+    "gulp-header": "^1.7.1",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.6",
+    "gulp-zip": "^3.0.2",
+    "inquirer": "^0.12.0",
+    "jquery": "^2.1.4",
+    "jsdom": "^8.0.0",
+    "node-mkdirp": "0.0.1",
+    "rimraf": "^2.4.4",
+    "rollup": "^0.25.4",
+    "run-sequence": "^1.1.2",
+    "sinon": "^1.17.3",
+    "tape": "^4.4.0",
+    "uglify-js": "^2.6.1",
+    "yuidocjs": "^0.10.0"
+  }
+}

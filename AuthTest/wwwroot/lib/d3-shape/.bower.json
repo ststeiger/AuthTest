@@ -1,0 +1,15 @@
+{
+  "name": "d3-shape",
+  "homepage": "https://github.com/d3/d3-shape",
+  "version": "1.2.0",
+  "_release": "1.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.0",
+    "commit": "ed87a6a021d32b871bed8cac683825403d61af47"
+  },
+  "_source": "https://github.com/d3/d3-shape.git",
+  "_target": "v1.2.0",
+  "_originalSource": "d3-shape",
+  "_direct": true
+}

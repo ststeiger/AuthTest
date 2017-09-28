@@ -1,0 +1,15 @@
+{
+  "name": "d3-interpolate",
+  "homepage": "https://github.com/d3/d3-interpolate",
+  "version": "1.1.5",
+  "_release": "1.1.5",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.1.5",
+    "commit": "bf7e74b2524ecfe4f17d361369a80f1556dc4840"
+  },
+  "_source": "https://github.com/d3/d3-interpolate.git",
+  "_target": "v1.1.5",
+  "_originalSource": "d3-interpolate",
+  "_direct": true
+}

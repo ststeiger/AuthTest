@@ -1,0 +1,15 @@
+{
+  "name": "d3-arrays",
+  "homepage": "https://github.com/d3/d3-arrays",
+  "version": "1.2.1",
+  "_release": "1.2.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.1",
+    "commit": "3eff46f9fde51882253a585cfad3ab2cd13bc932"
+  },
+  "_source": "https://github.com/d3/d3-arrays.git",
+  "_target": "v1.2.1",
+  "_originalSource": "d3-arrays",
+  "_direct": true
+}

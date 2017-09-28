@@ -1,0 +1,15 @@
+{
+  "name": "d3-format",
+  "homepage": "https://github.com/d3/d3-format",
+  "version": "1.2.0",
+  "_release": "1.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.2.0",
+    "commit": "c25c9e7403d2394b7a169c08168625d4e67e4ba7"
+  },
+  "_source": "https://github.com/d3/d3-format.git",
+  "_target": "v1.2.0",
+  "_originalSource": "d3-format",
+  "_direct": true
+}

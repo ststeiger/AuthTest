@@ -1,0 +1,15 @@
+{
+  "name": "d3.parcoords",
+  "homepage": "https://github.com/syntagmatic/parallel-coordinates",
+  "version": "0.7.0",
+  "_release": "0.7.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.7.0",
+    "commit": "ab3a6634d74dfa574936cc5cd0cd3ab2dbb6b21c"
+  },
+  "_source": "https://github.com/syntagmatic/parallel-coordinates.git",
+  "_target": "0.7.0",
+  "_originalSource": "d3.parcoords",
+  "_direct": true
+}

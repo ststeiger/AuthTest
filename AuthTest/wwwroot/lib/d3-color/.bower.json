@@ -1,0 +1,15 @@
+{
+  "name": "d3-color",
+  "homepage": "https://github.com/d3/d3-color",
+  "version": "1.0.3",
+  "_release": "1.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.3",
+    "commit": "1bc6fdd98d8e2c37a1274a542a9798c8859d71e0"
+  },
+  "_source": "https://github.com/d3/d3-color.git",
+  "_target": "v1.0.3",
+  "_originalSource": "d3-color",
+  "_direct": true
+}

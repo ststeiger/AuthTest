@@ -1,0 +1,15 @@
+{
+  "name": "d3-jetpack",
+  "homepage": "https://github.com/gka/d3-jetpack",
+  "version": "2.0.9",
+  "_release": "2.0.9",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.0.9",
+    "commit": "887b22069dbcc60e1ce17d55424e8824c2b8685a"
+  },
+  "_source": "https://github.com/gka/d3-jetpack.git",
+  "_target": "v2.0.9",
+  "_originalSource": "d3-jetpack",
+  "_direct": true
+}

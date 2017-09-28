@@ -1,0 +1,15 @@
+{
+  "name": "d3.facedetection",
+  "description": "Face Detection for SVG, HTML, Canvas and Videos",
+  "version": "0.0.0",
+  "main": "dist/d3.facedetection.js",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-qunit": "^0.5.2",
+    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "jshint-stylish": "^1.0.0"
+  }
+}
