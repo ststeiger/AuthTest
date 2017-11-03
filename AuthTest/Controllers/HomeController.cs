@@ -1,19 +1,24 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AuthTest.Models;
 
+
 namespace AuthTest.Controllers
 {
+
+
     public class HomeController : Controller
     {
+
+
         public IActionResult Index()
         {
             return View();
         }
+
 
         public IActionResult About()
         {
@@ -22,6 +27,7 @@ namespace AuthTest.Controllers
             return View();
         }
 
+
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
@@ -29,9 +35,14 @@ namespace AuthTest.Controllers
             return View();
         }
 
+
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-    }
-}
+
+
+    } // End Class HomeController : Controller 
+
+
+} // End Namespace AuthTest.Controllers 
