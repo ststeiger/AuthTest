@@ -51,8 +51,8 @@ namespace NiHaoCookie
             // data.AuthenticationScheme
             // data.Principal
             System.Console.WriteLine(data.Principal);
-            
-            string jwtTicket = AuthHelper.IssueToken();
+
+            string jwtTicket = AuthHelper.IssueToken(data);
             System.Console.WriteLine(jwtTicket);
 
             return jwtTicket;

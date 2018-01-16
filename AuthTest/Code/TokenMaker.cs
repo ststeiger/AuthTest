@@ -32,7 +32,7 @@ namespace NiHaoCookie
         }
 
 
-        public static string IssueToken()
+        public static string IssueToken(Microsoft.AspNetCore.Authentication.AuthenticationTicket data)
         {
             var claimList = new List<Claim>()
             {
@@ -81,7 +81,7 @@ namespace NiHaoCookie
             };
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityTokenDescriptor desc = makeSecurityTokenDescriptor(SecurityConstants.SecurityKey, claimList);
+            SecurityTokenDescriptor desc = makeSecurityTokenDescriptor(SecurityConstants.SecurityKey, claimList, data);
 
             JwtSecurityToken tok = tokenHandler.CreateJwtSecurityToken(desc);
             // tok.Header.Add("jti", "foo");
@@ -96,16 +96,17 @@ namespace NiHaoCookie
         } // End Function IssueToken 
 
 
-        private static SecurityTokenDescriptor makeSecurityTokenDescriptor(SecurityKey sSKey, List<Claim> claimList)
+        private static SecurityTokenDescriptor makeSecurityTokenDescriptor(SecurityKey sSKey, List<Claim> claimList1, Microsoft.AspNetCore.Authentication.AuthenticationTicket data)
         {
-            claimList.Add(new System.Security.Claims.Claim("jti", System.Guid.NewGuid().ToString()));
+            // claimList.Add(new System.Security.Claims.Claim("jti", System.Guid.NewGuid().ToString()));
 
             System.DateTime now = DateTime.UtcNow;
-            Claim[] claims = claimList.ToArray();
+            // Claim[] claims = claimList.ToArray();
 
             return new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
             {
-                Subject = new System.Security.Claims.ClaimsIdentity(claims),
+                //Subject = new System.Security.Claims.ClaimsIdentity(claims),
+                Subject = (ClaimsIdentity) data.Principal.Identity,
                 Issuer = SecurityConstants.TokenIssuer,
                 Audience = SecurityConstants.TokenAudience,
                 IssuedAt = System.DateTime.UtcNow,

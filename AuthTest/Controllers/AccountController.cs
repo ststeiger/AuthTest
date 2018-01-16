@@ -1,12 +1,6 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
-
-
 using Microsoft.AspNetCore.Authentication;
 
 
@@ -83,13 +77,13 @@ namespace AuthTest.Controllers
             htmlTemplate = htmlTemplate.Replace("@title", "Access denied (unauthorized)");
             htmlTemplate = htmlTemplate.Replace("@body", "<h1>Unauthorized</h1>");
 
-            var foo = new StackOverflower();
-            System.Console.WriteLine(foo.MyText);
-            // throw new Exception("foo");
+            //var foo = new StackOverflower();
+            //System.Console.WriteLine(foo.MyText);
+            //// throw new Exception("foo");
 
-            this.m_MailService.SendMail("stefan.steiger[at]rsnweb.ch", "Stefan Steiger"
-                , "steiger[at]cor-management.ch", "Unauthorized", htmlTemplate
-            );
+            //this.m_MailService.SendMail("stefan.steiger[at]rsnweb.ch", "Stefan Steiger"
+            //    , "steiger[at]cor-management.ch", "Unauthorized", htmlTemplate
+            //);
 
             return Content(htmlTemplate, "text/html");
         } // End Action NotAuthorized 
@@ -105,6 +99,7 @@ namespace AuthTest.Controllers
             [FromForm(Name = "uname")]
             public string UserName { get; set; }
 
+
             [System.ComponentModel.DataAnnotations.Required]
             [System.ComponentModel.DataAnnotations.DataType(
                 System.ComponentModel.DataAnnotations.DataType.Password)
@@ -118,12 +113,13 @@ namespace AuthTest.Controllers
             [FromForm(Name = "RememberMe")]
             public bool RememberMe { get; set; }
 
+
             [System.ComponentModel.DataAnnotations.DataType(
                 System.ComponentModel.DataAnnotations.DataType.Date)]
             [System.ComponentModel.DataAnnotations.DisplayFormat(
                 DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
             [FromQuery(Name = "ed")]
-            public DateTime? EnrollmentDate { get; set; }
+            public System.DateTime? EnrollmentDate { get; set; }
         }
 
 
@@ -172,6 +168,8 @@ namespace AuthTest.Controllers
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, loginData.UserName)
                 //new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, uname)
             );
+
+
 
             System.Security.Claims.ClaimsPrincipal principal = new System.Security.Claims.ClaimsPrincipal(identity);
             AuthenticationProperties properties = new AuthenticationProperties { IsPersistent = true };
