@@ -424,6 +424,13 @@ namespace AuthTest
                     ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Expires] = "0";
                     ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.Pragma] = "no-cache";
 
+                    ctx.Context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+                    if (ctx.Context.Request.IsHttps)
+                    {
+                        ctx.Context.Response.Headers["Strict-Transport-Security"] = "max-age=86400; includeSubDomains; preload";
+                    }
+
                     if (ctx.Context.Request.Path.HasValue)
                     {
                         System.IO.FileInfo fi = new System.IO.FileInfo(pathProvider.MapPath(ctx.Context.Request.Path));
