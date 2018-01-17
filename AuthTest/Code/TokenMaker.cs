@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-
-
-using System.Security.Claims;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Xml;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿
+// using System.Security.Claims;
+// using Microsoft.IdentityModel.Tokens;
+// using System.IdentityModel.Tokens.Jwt;
 
 
 namespace NiHaoCookie
@@ -19,22 +11,25 @@ namespace NiHaoCookie
     public class AuthHelper
     {
 
+
         class SecurityConstants
         {
             public static string TokenIssuer = "nihao.lol";
             public static string TokenAudience = "nobody";
             public static int TokenLifetimeMinutes = 720; // 60*12;
 
-            public static SecurityKey SecurityKey = new SymmetricSecurityKey(
+            public static Microsoft.IdentityModel.Tokens.SecurityKey SecurityKey = 
+                new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
                 System.Text.Encoding.UTF8.GetBytes("i am a top secret password")
             );
 
-        }
+        } // End Class SecurityConstants 
 
 
         public static string IssueToken(Microsoft.AspNetCore.Authentication.AuthenticationTicket data)
         {
-            var claimList = new List<Claim>()
+            /*
+            List<Claim> claimList = new List<Claim>()
             {
                 new Claim(ClaimTypes.Role, "role 1"),     //Not sure what this is for
                 new Claim(ClaimTypes.Role, "role 2"),
@@ -79,11 +74,33 @@ namespace NiHaoCookie
                 new Claim(ClaimTypes.X500DistinguishedName,"X500DistinguishedName"),
 
             };
+            */
 
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
-            SecurityTokenDescriptor desc = makeSecurityTokenDescriptor(SecurityConstants.SecurityKey, claimList, data);
 
-            JwtSecurityToken tok = tokenHandler.CreateJwtSecurityToken(desc);
+            System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler tokenHandler = 
+                new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+
+
+            System.DateTime now = System.DateTime.UtcNow;
+
+            Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor desc = 
+                new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
+            {
+                //Subject = new System.Security.Claims.ClaimsIdentity(claimList),
+                Subject = (System.Security.Claims.ClaimsIdentity)data.Principal.Identity,
+                Issuer = SecurityConstants.TokenIssuer,
+                Audience = SecurityConstants.TokenAudience,
+                IssuedAt = now,
+                Expires = now.AddMinutes(SecurityConstants.TokenLifetimeMinutes),
+                NotBefore = now.AddTicks(-1),
+                SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(
+                    SecurityConstants.SecurityKey
+                    , Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256
+                )
+            };
+
+            System.IdentityModel.Tokens.Jwt.JwtSecurityToken tok = 
+                tokenHandler.CreateJwtSecurityToken(desc);
             // tok.Header.Add("jti", "foo");
             // tok.Payload.Add("jti", "foobar");
 
@@ -96,44 +113,25 @@ namespace NiHaoCookie
         } // End Function IssueToken 
 
 
-        private static SecurityTokenDescriptor makeSecurityTokenDescriptor(SecurityKey sSKey, List<Claim> claimList1, Microsoft.AspNetCore.Authentication.AuthenticationTicket data)
+        public static System.Security.Claims.ClaimsPrincipal 
+            ValidateJwtToken(string jwtToken, out Microsoft.IdentityModel.Tokens.SecurityToken token)
         {
-            // claimList.Add(new System.Security.Claims.Claim("jti", System.Guid.NewGuid().ToString()));
-
-            System.DateTime now = DateTime.UtcNow;
-            // Claim[] claims = claimList.ToArray();
-
-            return new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
-            {
-                //Subject = new System.Security.Claims.ClaimsIdentity(claims),
-                Subject = (ClaimsIdentity) data.Principal.Identity,
-                Issuer = SecurityConstants.TokenIssuer,
-                Audience = SecurityConstants.TokenAudience,
-                IssuedAt = System.DateTime.UtcNow,
-                Expires = System.DateTime.UtcNow.AddMinutes(SecurityConstants.TokenLifetimeMinutes),
-                NotBefore = System.DateTime.UtcNow.AddTicks(-1),
-
-                SigningCredentials = new SigningCredentials(sSKey, Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256)
-            };
-
-        } // End Function makeSecurityTokenDescriptor 
-        
-
-        public static ClaimsPrincipal ValidateJwtToken(string jwtToken, out SecurityToken token)
-        {
-            SecurityKey sSKey = SecurityConstants.SecurityKey;
-            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            Microsoft.IdentityModel.Tokens.SecurityKey sSKey = SecurityConstants.SecurityKey;
+            System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler tokenHandler = 
+                new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
 
             // Parse JWT from the Base64UrlEncoded wire form 
             //(<Base64UrlEncoded header>.<Base64UrlEncoded body>.<signature>)
-            JwtSecurityToken parsedJwt = tokenHandler.ReadToken(jwtToken) as JwtSecurityToken;
+            System.IdentityModel.Tokens.Jwt.JwtSecurityToken parsedJwt = tokenHandler.ReadToken(jwtToken) 
+                as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
 
-            TokenValidationParameters validationParams =
-                new TokenValidationParameters()
+            Microsoft.IdentityModel.Tokens.TokenValidationParameters validationParams =
+                new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
                 {
                     RequireExpirationTime = true,
                     ValidAudience = SecurityConstants.TokenAudience,
-                    ValidIssuers = new List<string>() { SecurityConstants.TokenIssuer },
+                    ValidIssuers = new System.Collections.Generic.List<string>()
+                        { SecurityConstants.TokenIssuer },
                     ValidateIssuerSigningKey = true,
                     ValidateLifetime = true,
                     IssuerSigningKey = sSKey,
@@ -144,8 +142,7 @@ namespace NiHaoCookie
         } // End Function ValidateJwtToken 
 
 
+    } // End Class AuthHelper 
 
 
-
-    }
-}
+} // End Namespace NiHaoCookie 

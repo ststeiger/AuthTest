@@ -77,8 +77,8 @@ namespace AuthTest.Controllers
             htmlTemplate = htmlTemplate.Replace("@title", "Access denied (unauthorized)");
             htmlTemplate = htmlTemplate.Replace("@body", "<h1>Unauthorized</h1>");
 
-            //var foo = new StackOverflower();
-            //System.Console.WriteLine(foo.MyText);
+            // StackOverflower foo = new StackOverflower();
+            // System.Console.WriteLine(foo.MyText);
             //// throw new Exception("foo");
 
             //this.m_MailService.SendMail("stefan.steiger[at]rsnweb.ch", "Stefan Steiger"
@@ -160,13 +160,13 @@ namespace AuthTest.Controllers
             //System.Security.Claims.ClaimsIdentity id = new System.Security.Claims.ClaimsIdentity("authenticationType");
             //id.AddClaims(ls);
 
-            System.Security.Claims.ClaimsIdentity identity = 
+            System.Security.Claims.ClaimsIdentity identity =
                 new System.Security.Claims.ClaimsIdentity(Microsoft.AspNetCore.Authentication.Cookies
                     .CookieAuthenticationDefaults.AuthenticationScheme);
 
             identity.AddClaim(
                 new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, loginData.UserName)
-                //new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, uname)
+            //new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, uname)
             );
 
 
@@ -176,6 +176,12 @@ namespace AuthTest.Controllers
             // https://docs.asp.net/en/latest/security/authentication/cookie.html
 
             await HttpContext.SignInAsync(principal);
+
+            // https://docs.microsoft.com/en-us/aspnet/core/security/preventing-open-redirects
+            if (!this.Url.IsLocalUrl(ReturnUrl))
+            {
+                System.Console.WriteLine("TODO: Log returnUrl");
+            }
 
             // return Content(htmlTemplate, "text/html");
             return this.LocalRedirect(ReturnUrl ?? "/");

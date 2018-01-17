@@ -121,7 +121,7 @@ namespace AuthTest
 
                 Microsoft.IdentityModel.Tokens.SecurityKey signingKey = null;
 
-                // var x = new System.Security.Cryptography.RSACryptoServiceProvider();
+                // RSACryptoServiceProvider x = new System.Security.Cryptography.RSACryptoServiceProvider();
                 // Microsoft.IdentityModel.Tokens.RsaSecurityKey rsakew = 
                 // new Microsoft.IdentityModel.Tokens.RsaSecurityKey(x);
 
@@ -132,26 +132,28 @@ namespace AuthTest
                     new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("Test"));
 
 
-                var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    // The signing key must match!
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = signingKey,
+                Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters = 
+                    new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        // The signing key must match!
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = signingKey,
 
-                    // Validate the JWT Issuer (iss) claim
-                    ValidateIssuer = true,
-                    ValidIssuer = "ExampleIssuer",
+                        // Validate the JWT Issuer (iss) claim
+                        ValidateIssuer = true,
+                        ValidIssuer = "ExampleIssuer",
 
-                    // Validate the JWT Audience (aud) claim
-                    ValidateAudience = true,
-                    ValidAudience = "ExampleAudience",
+                        // Validate the JWT Audience (aud) claim
+                        ValidateAudience = true,
+                        ValidAudience = "ExampleAudience",
 
-                    // Validate the token expiry
-                    ValidateLifetime = true,
+                        // Validate the token expiry
+                        ValidateLifetime = true,
 
-                    // If you want to allow a certain amount of clock drift, set that here:
-                    ClockSkew = System.TimeSpan.Zero,
-                };
+                        // If you want to allow a certain amount of clock drift, set that here:
+                        //ClockSkew = System.TimeSpan.Zero,
+                        ClockSkew = new System.TimeSpan(0, 5, 0) // 5 minutes
+                    };
 
 
 
@@ -277,12 +279,12 @@ namespace AuthTest
             return services.BuildServiceProvider();
         } // End Function ConfigureServices 
 
+
         private Task ValidateAsync(CookieValidatePrincipalContext context)
         {
             return Task.FromResult(true);
             // throw new NotImplementedException();
         }
-
         
 
         void Microsoft.AspNetCore.Hosting.IStartup.Configure(IApplicationBuilder app)
