@@ -3,30 +3,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Security.Claims;
 
-using Microsoft.AspNetCore.Builder; // Various extensions
-// using Microsoft.AspNetCore.Hosting; // env.IsDevelopment
-
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration; // Not yet used
 using Microsoft.Extensions.DependencyInjection; // Various extensions
 
-
-using Microsoft.Extensions.Logging;
-
-
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-
-
-
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-
+using Microsoft.AspNetCore.Builder; // Various extensions
+using Microsoft.AspNetCore.Hosting; // env.IsDevelopment
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 namespace AuthTest
@@ -84,58 +71,33 @@ namespace AuthTest
 
 
             // https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x
-
             // services.ConfigureExternalCookie()
             // services.ConfigureApplicationCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts) {});
+            
+
+            Microsoft.IdentityModel.Tokens.SecurityKey signingKey = null;
+
+            // RSACryptoServiceProvider x = new System.Security.Cryptography.RSACryptoServiceProvider();
+            // Microsoft.IdentityModel.Tokens.RsaSecurityKey rsakew = 
+            // new Microsoft.IdentityModel.Tokens.RsaSecurityKey(x);
+
+            // var securityKey = new InMemorySymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("sec"));
+
+            Microsoft.IdentityModel.Tokens.SymmetricSecurityKey symkey =
+                new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                // The algorithm: 'HS256' requires the SecurityKey.KeySize to be 
+                // greater than '128' bits. KeySize reported: '32'.
+                // ==> key-text >= 16 bytes
+                // System.Text.Encoding.UTF8.GetBytes("test")
+                System.Text.Encoding.UTF8.GetBytes("i am a top secret password") 
+            );
 
 
-            services.AddAuthentication(
-                delegate (Microsoft.AspNetCore.Authentication.AuthenticationOptions options) 
-                {
-                    options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
+            signingKey = symkey;
 
-                    options.DefaultAuthenticateScheme= Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
+            string securityAlgorithm = Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256;
 
-                    options.DefaultForbidScheme= Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
-
-                    options.DefaultSignInScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
-
-                    options.DefaultSignOutScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
-
-                    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
-                }
-            )
-            // 
-            .AddCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts) 
-            {
-                opts.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/");
-                opts.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Account/Logout/");
-                opts.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
-
-
-                Microsoft.IdentityModel.Tokens.SecurityKey signingKey = null;
-
-                // RSACryptoServiceProvider x = new System.Security.Cryptography.RSACryptoServiceProvider();
-                // Microsoft.IdentityModel.Tokens.RsaSecurityKey rsakew = 
-                // new Microsoft.IdentityModel.Tokens.RsaSecurityKey(x);
-
-                // var securityKey = new InMemorySymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("sec"));
-                
-                Microsoft.IdentityModel.Tokens.SymmetricSecurityKey symkey =
-                    new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                        System.Text.Encoding.UTF8.GetBytes("Test")
-                );
-
-
-                signingKey = symkey;
-
-                Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters = 
+            Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters =
                     new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         // The signing key must match!
@@ -154,11 +116,42 @@ namespace AuthTest
                         ValidateLifetime = true,
 
                         // If you want to allow a certain amount of clock drift, set that here:
-                        //ClockSkew = System.TimeSpan.Zero,
+                        // ClockSkew = System.TimeSpan.Zero,
                         ClockSkew = new System.TimeSpan(0, 5, 0) // 5 minutes
                     };
+
+            // tokenValidationParameters.valid
+
+
+            services.AddAuthentication(
+                delegate (Microsoft.AspNetCore.Authentication.AuthenticationOptions options)
+                {
+                    options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+
+                    options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+
+                    options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+
+                    options.DefaultSignInScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+
+                    options.DefaultSignOutScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+
+                    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+                }
+            )
+            // 
+            .AddCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts)
+            {
+                opts.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/");
+                opts.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Account/Logout/");
+                opts.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
                 
-                // tokenValidationParameters.valid
 
                 opts.Cookie = new Microsoft.AspNetCore.Http.CookieBuilder()
                 {
@@ -173,6 +166,7 @@ namespace AuthTest
 
                 opts.SlidingExpiration = true;
                 opts.ExpireTimeSpan = new System.TimeSpan(15, 0, 0);
+
 
                 // https://long2know.com/2017/05/migrating-from-net-core-1-1-to-2-0/
                 opts.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents()
@@ -191,13 +185,17 @@ namespace AuthTest
                 opts.Cookie.HttpOnly = true;
                 opts.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
                 */
-                opts.TicketDataFormat = new NiHaoCookie.JwtCookieDataFormat("foo", tokenValidationParameters);
+
+
+                opts.TicketDataFormat = new NiHaoCookie.JwtCookieDataFormat(
+                    securityAlgorithm, tokenValidationParameters,
+                    (int)opts.ExpireTimeSpan.TotalMinutes // 900 = 60*15 = tokenLifetime - in minutes
+                ); 
 
                 // opts.DataProtectionProvider = null;
 
                 // AutomaticAuthenticate = true,
                 // AutomaticChallenge = true,
-                
             })
             /*
             .AddJwtBearer(
@@ -250,10 +248,10 @@ namespace AuthTest
             services.AddAntiforgery(
                  delegate (Microsoft.AspNetCore.Antiforgery.AntiforgeryOptions options)
                  {
-                        // https://damienbod.com/2017/05/09/anti-forgery-validation-with-asp-net-core-mvc-and-angular/
-                        options.HeaderName = "X-XSRF-TOKEN";
-                        //options.CookieDomain = "localhost";
-                        options.Cookie.Name = "foobr";
+                     // https://damienbod.com/2017/05/09/anti-forgery-validation-with-asp-net-core-mvc-and-angular/
+                     options.HeaderName = "X-XSRF-TOKEN";
+                     //options.CookieDomain = "localhost";
+                     options.Cookie.Name = "foobr";
                  }
             );
 
@@ -269,7 +267,7 @@ namespace AuthTest
             services.AddMvc(
                 delegate (Microsoft.AspNetCore.Mvc.MvcOptions config)
                 {
-                    Microsoft.AspNetCore.Authorization.AuthorizationPolicy policy = 
+                    Microsoft.AspNetCore.Authorization.AuthorizationPolicy policy =
                         new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
                                      .RequireAuthenticatedUser()
                                      // .AddRequirements( new NoBannedIPsRequirement(new HashSet<string>() { "127.0.0.1", "0.0.0.1" } ))
@@ -278,7 +276,7 @@ namespace AuthTest
                     config.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
                 }
             );
-            
+
             return services.BuildServiceProvider();
         } // End Function ConfigureServices 
         
@@ -310,12 +308,14 @@ namespace AuthTest
             Services.IPathProvider pathProvider = app.ApplicationServices.
                 GetRequiredService<Services.IPathProvider>();
 
-            this.ConfigureMapping(app, loggerFactory, mailService, env, httpContext, pathProvider);
+            this.ConfigureVirtualDirectory(app, loggerFactory, mailService, env, httpContext, pathProvider);
         } // End Function Configure 
+        
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void ConfigureMapping(Microsoft.AspNetCore.Builder.IApplicationBuilder app
+        public void ConfigureVirtualDirectory(
+              Microsoft.AspNetCore.Builder.IApplicationBuilder app
             , Microsoft.Extensions.Logging.ILoggerFactory loggerFactory
             , Services.IMailService mailService
             , Microsoft.AspNetCore.Hosting.IHostingEnvironment env
@@ -329,22 +329,38 @@ namespace AuthTest
             if (virtual_directory.EndsWith("/"))
                 virtual_directory = virtual_directory.Substring(0, virtual_directory.Length - 1);
 
+            // Don't map if you don't have to 
             if (string.IsNullOrWhiteSpace(virtual_directory))
-                ConfigureMapped(app, loggerFactory, mailService, env, httpContext, pathProvider); // Don't map if you don't have to 
+                ConfigureApplication(
+                              app
+                            , loggerFactory
+                            , mailService
+                            , env
+                            , httpContext
+                            , pathProvider
+                );
             else
                 // app.Map("/Virt_DIR", (mappedApp) => Configure1(mappedApp, env, loggerFactory));
                 app.Map(virtual_directory, 
                     delegate (IApplicationBuilder mappedApp)
                     {
-                        ConfigureMapped(mappedApp, loggerFactory, mailService, env, httpContext, pathProvider);
+                        ConfigureApplication(
+                              mappedApp
+                            , loggerFactory
+                            , mailService
+                            , env
+                            , httpContext
+                            , pathProvider
+                        );
                     }
                 );
 
         } // End Sub ConfigureMapping 
 
 
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void ConfigureMapped(
+        public void ConfigureApplication(
               Microsoft.AspNetCore.Builder.IApplicationBuilder app
             , Microsoft.Extensions.Logging.ILoggerFactory loggerFactory
             , Services.IMailService mailService

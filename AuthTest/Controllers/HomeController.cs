@@ -19,8 +19,8 @@ namespace AuthTest.Controllers
         {
             try
             {
-                string usr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-                //string usr = User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value;
+                // string usr = this.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+                string usr = this.User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value;
                 
                 System.Console.WriteLine(usr);
             }
