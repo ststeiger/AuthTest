@@ -38,8 +38,8 @@ namespace AuthTest
     {
         private IHostingEnvironment HostingEnvironment { get; set; }
         public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
-        private Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory;
-        private IApplicationBuilder Application;
+        private Microsoft.Extensions.Logging.ILoggerFactory m_LoggerFactory;
+        private IApplicationBuilder m_Application;
 
 
         public Startup(IHostingEnvironment env, Microsoft.Extensions.Configuration.IConfiguration config
@@ -48,7 +48,7 @@ namespace AuthTest
         {
             this.HostingEnvironment = env;
             this.Configuration = config;
-            this.LoggerFactory = logFactory;
+            this.m_LoggerFactory = logFactory;
         } // End Constructor 
 
 
@@ -126,11 +126,14 @@ namespace AuthTest
                 // new Microsoft.IdentityModel.Tokens.RsaSecurityKey(x);
 
                 // var securityKey = new InMemorySymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("sec"));
-
-
+                
                 Microsoft.IdentityModel.Tokens.SymmetricSecurityKey symkey =
-                    new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("Test"));
+                    new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+                        System.Text.Encoding.UTF8.GetBytes("Test")
+                );
 
+
+                signingKey = symkey;
 
                 Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters = 
                     new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -154,8 +157,8 @@ namespace AuthTest
                         //ClockSkew = System.TimeSpan.Zero,
                         ClockSkew = new System.TimeSpan(0, 5, 0) // 5 minutes
                     };
-
-
+                
+                // tokenValidationParameters.valid
 
                 opts.Cookie = new Microsoft.AspNetCore.Http.CookieBuilder()
                 {
@@ -194,7 +197,7 @@ namespace AuthTest
 
                 // AutomaticAuthenticate = true,
                 // AutomaticChallenge = true,
-
+                
             })
             /*
             .AddJwtBearer(
@@ -275,21 +278,21 @@ namespace AuthTest
                     config.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
                 }
             );
-
+            
             return services.BuildServiceProvider();
         } // End Function ConfigureServices 
-
-
+        
+        
         private Task ValidateAsync(CookieValidatePrincipalContext context)
-        {
+        {   
             return Task.FromResult(true);
             // throw new NotImplementedException();
         }
         
-
+        
         void Microsoft.AspNetCore.Hosting.IStartup.Configure(IApplicationBuilder app)
         {
-            this.Application = app;
+            this.m_Application = app;
 
             Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = app.ApplicationServices.
                 GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
@@ -354,13 +357,16 @@ namespace AuthTest
             //     , Microsoft.Extensions.Logging.LogLevel.Error
             // );
 
+            
+            // TODO: Uncomment when error found
+            
             AuthTest.Logger.EmailLoggerExtensions.AddEmail(
                   loggerFactory
                 , mailService
                 , Microsoft.Extensions.Logging.LogLevel.Error  // , Microsoft.Extensions.Logging.LogLevel.Critical
                 , httpContext
             );
-
+            
 
             //app.UseExceptionHandler(
             //    delegate(IApplicationBuilder builder)
@@ -456,7 +462,8 @@ namespace AuthTest
 
                 } // End OnPrepareResponse 
             });
-
+            
+            
             app.UseMvc( 
                 delegate(Microsoft.AspNetCore.Routing.IRouteBuilder routes)
                 {
@@ -465,11 +472,11 @@ namespace AuthTest
                         template: "{controller=Home}/{action=Index}/{id?}");
                 }
             );
-
+            
         } // End Sub ConfigureMapped 
-
-
+        
+        
     } // End Class Startup : Microsoft.AspNetCore.Hosting.IStartup 
-
-
+    
+    
 } // End Namespace AuthTest 

@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -12,10 +13,23 @@ namespace AuthTest.Controllers
 
     public class HomeController : Controller
     {
-
-
+        
+        
         public IActionResult Index()
         {
+            try
+            {
+                string usr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+                //string usr = User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value;
+                
+                System.Console.WriteLine(usr);
+            }
+            catch (Exception e)
+            {
+                // System.Console.WriteLine(e);
+                throw;
+            }
+            
             return View();
         }
 

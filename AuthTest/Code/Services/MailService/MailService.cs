@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -96,9 +97,15 @@ namespace AuthTest.Services
             m_logger = logger;
             m_smtpConfig = smtpConfig.Value;
         } // End Constructor 
-
-
+        
+        
         async Task IMailService.SendMail(string senderEmail, string name, string email, string subject, string msg)
+        {
+            await this.SendMailImpl(true, senderEmail, name, email, subject, msg);
+        }
+        
+
+        private async Task SendMailImpl(bool repeat, string senderEmail, string name, string email, string subject, string msg)
         {
             try
             {
@@ -129,7 +136,23 @@ namespace AuthTest.Services
             }
             catch (System.Exception ex)
             {
-                this.m_logger.LogError("Exception Thrown sending message via SendGrid", ex);
+                // OMG: Recursive...
+
+                try
+                {
+                    // this.m_logger.LogError("Exception Thrown sending message via SendGrid", ex);
+                    
+                    if(repeat)
+                        await this.SendMailImpl(false, senderEmail, name, email, subject, msg);
+                    else
+                        System.Console.WriteLine("Exception Thrown sending message via SendGrid\n{0}", ex.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+                
             }
 
         } // End function IMailService.SendMail 

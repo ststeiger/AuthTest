@@ -2,8 +2,7 @@
   "version": "1.0.0",
   "name": "authtest",
   "private": true,
-  "devDependencies":
-  {
+  "devDependencies": {
     "gulp": "3.9.1"
   }
 }
