@@ -1,20 +1,20 @@
 ﻿
-namespace AuthTest.Crypto 
+namespace AuthTest.Cryptography
 {
     
     
     // https://stackoverflow.com/questions/41986995/implement-rsa-in-net-core
-    public class Simple
+    public class SecurityKeyRepo
     {
         
         
         private static void Test()
         {
-            Simple.GetRsaKey();
-            Simple.GetECDsaKey();
+            GetRsaKey();
+            GetECDsaKey();
             
-            Simple.GetBouncyRsaKey();
-            Simple.GetBouncyEcdsaKey();
+            GetBouncyRsaKey();
+            GetBouncyEcdsaKey();
         }
         
         

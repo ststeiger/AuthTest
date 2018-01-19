@@ -1,8 +1,9 @@
 ﻿
-namespace AuthTest.Crypto 
+namespace AuthTest.Cryptography
 {
 
-
+    // https://stackoverflow.com/questions/37526036/how-to-determine-the-public-key-size-from-the-csr-file-using-bouncy-castle-in-ja
+    // https://searchcode.com/file/94872444/crypto/src/asn1/sec/SECNamedCurves.cs
     public class BouncyECDSA : System.Security.Cryptography.ECDsa // abstract class ECDsa : AsymmetricAlgorithm
     {
         
@@ -20,9 +21,11 @@ namespace AuthTest.Crypto
                 new Org.BouncyCastle.Security.SecureRandom();
 
             // https://github.com/bcgit/bc-csharp/blob/master/crypto/src/asn1/sec/SECNamedCurves.cs#LC1096
-            Org.BouncyCastle.Asn1.X9.X9ECParameters ps = 
-                Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetByName("secp256k1");
+            Org.BouncyCastle.Asn1.X9.X9ECParameters ps =
+            //Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetByName("secp256k1");
+            Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetByName("secp521r1");
             
+
             Org.BouncyCastle.Crypto.Parameters.ECDomainParameters ecParams = 
                 new Org.BouncyCastle.Crypto.Parameters.ECDomainParameters(ps.Curve, ps.G, ps.N, ps.H);
 
@@ -49,6 +52,7 @@ namespace AuthTest.Crypto
             :base()
         {
             this.m_privKey = privKey;
+            this.KeySizeValue = this.m_privKey.Parameters.Curve.FieldSize;
         } // End Constructor 
 
 
@@ -56,6 +60,7 @@ namespace AuthTest.Crypto
             :base()
         {
             this.m_pubKey = pubKey;
+            this.KeySizeValue = this.m_pubKey.Parameters.Curve.FieldSize;
         } // End Constructor 
         
         
@@ -64,10 +69,19 @@ namespace AuthTest.Crypto
         {
             this.m_privKey = (Org.BouncyCastle.Crypto.Parameters.ECPrivateKeyParameters) kp.Private;
             this.m_pubKey = (Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters) kp.Public;
-            this.KeySizeValue = keySize;
+            //this.KeySizeValue = keySize;
+
+            //var x = (Org.BouncyCastle.Crypto.Parameters.ECKeyParameters)kp.Public;
+
+            // var x = (Org.BouncyCastle.Crypto.Parameters.DsaPublicKeyParameters)kp.Public;
+            // var y = (Org.BouncyCastle.Crypto.Parameters.DsaPrivateKeyParameters)kp.Private;
+
+            // this.KeySizeValue = x.Y.BitCount;
+            // this.KeySizeValue = y.X.BitCount;
+            this.KeySizeValue = this.m_privKey.Parameters.Curve.FieldSize;
         } // End Constructor 
-        
-        
+
+
         // protected ECDsa();
         // public override string KeyExchangeAlgorithm { get; }
         // public override string SignatureAlgorithm { get; }
@@ -79,29 +93,59 @@ namespace AuthTest.Crypto
         // public static ECDsa Create(ECCurve curve);
         // public static ECDsa Create();
 
+        
         private byte[] DerEncode(Org.BouncyCastle.Math.BigInteger r, Org.BouncyCastle.Math.BigInteger s)
         {
-            return new Org.BouncyCastle.Asn1.DerSequence(new Org.BouncyCastle.Asn1.Asn1Encodable[2]
+            return new Org.BouncyCastle.Asn1.DerSequence(
+                new Org.BouncyCastle.Asn1.Asn1Encodable[2]
+                {
+                    new Org.BouncyCastle.Asn1.DerInteger(r),
+                    new Org.BouncyCastle.Asn1.DerInteger(s)
+                }
+            ).GetDerEncoded();
+        } // End Function DerEncode 
+
+
+        private Org.BouncyCastle.Math.BigInteger[] DerDecode(byte[] encoding)
+        {
+            Org.BouncyCastle.Asn1.Asn1Sequence asn1Sequence = 
+                (Org.BouncyCastle.Asn1.Asn1Sequence)
+                Org.BouncyCastle.Asn1.Asn1Object.FromByteArray(encoding);
+
+            return new Org.BouncyCastle.Math.BigInteger[2]
             {
-                (Org.BouncyCastle.Asn1.Asn1Encodable) new Org.BouncyCastle.Asn1.DerInteger(r),
-                (Org.BouncyCastle.Asn1.Asn1Encodable) new Org.BouncyCastle.Asn1.DerInteger(s)
-            }).GetDerEncoded();
-        }
-        
-        
+                ((Org.BouncyCastle.Asn1.DerInteger) asn1Sequence[0]).Value,
+                ((Org.BouncyCastle.Asn1.DerInteger) asn1Sequence[1]).Value
+            };
+        } // End Function DerDecode 
+
+
         // Abstract    
+        // throw new InvalidKeyException("EC private key required for signing");
         public override byte[] SignHash(byte[] hash)
         {
-            // throw new InvalidKeyException("EC private key required for signing");
-            
+            byte[] encoded = SignHashInternal(hash);
+
+            return AsymmetricAlgorithmHelpers.ConvertDerToIeee1363(encoded, 0, encoded.Length, this.KeySize);
+        } // End Function SignHash 
+
+
+        public byte[] SignHashInternal(byte[] hash)
+        {
+            if (hash == null)
+                throw new System.ArgumentNullException(nameof(hash));
+
             Org.BouncyCastle.Crypto.Signers.ECDsaSigner signer = new Org.BouncyCastle.Crypto.Signers.ECDsaSigner();
             signer.Init(true, this.m_privKey);
-            
+
             Org.BouncyCastle.Math.BigInteger[] signature = signer.GenerateSignature(hash);
-            return this.DerEncode(signature[0], signature[1]);
-        }
+            byte[] encoded = this.DerEncode(signature[0], signature[1]);
+
+            return encoded;
+        } // End Function SignHashInternal
 
 
+        /*
         private static bool ByteArrayAreEqual(byte[] a1, byte[] a2)
         {
             if (a1 == null && a2 == null)
@@ -134,23 +178,34 @@ namespace AuthTest.Crypto
             
             // if there never was a mismatch, a1 and b1 are equal
             return true;
-        }
-        
-        
+        } // End Function ByteArrayAreEqual 
+        */
+
+
         // Abstract
         public override bool VerifyHash(byte[] hash, byte[] signature)
         {
-            // byte[] msgBytes = hash;
-            // Org.BouncyCastle.Crypto.ISigner signer = Org.BouncyCastle.Security.SignerUtilities.GetSigner("SHA-256withECDSA");
-            // signer.Init(false, this.m_pubKey);
-            // signer.BlockUpdate(msgBytes, 0, msgBytes.Length);
-            // return signer.VerifySignature(signature);
+            if (hash == null)
+                throw new System.ArgumentNullException(nameof(hash));
+
+            if (signature == null)
+                throw new System.ArgumentNullException(nameof(signature));
+
+            int num = 2 * AsymmetricAlgorithmHelpers.BitsToBytes(this.KeySize);
+            if (signature.Length != num)
+                return false;
+
+            byte[] derSignature = AsymmetricAlgorithmHelpers.ConvertIeee1363ToDer(signature);
             
-            byte[] shouldMatch = this.SignHash(hash);
-            return ByteArrayAreEqual(shouldMatch, signature);
-        }
-        
-        
+            Org.BouncyCastle.Crypto.Signers.ECDsaSigner signer = 
+                new Org.BouncyCastle.Crypto.Signers.ECDsaSigner();
+            signer.Init(false, this.m_pubKey);
+            
+            Org.BouncyCastle.Math.BigInteger[] bigIntegerArray = this.DerDecode(derSignature);
+            return signer.VerifySignature(hash, bigIntegerArray[0], bigIntegerArray[1]);
+        } // End Function VerifyHash 
+
+
         // Not required
         // public virtual ECParameters ExportExplicitParameters(bool includePrivateParameters);
         // public virtual ECParameters ExportParameters(bool includePrivateParameters);
@@ -175,8 +230,7 @@ namespace AuthTest.Crypto
         // public virtual bool VerifyData(byte[] data, int offset, int count, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm);
         // // public bool VerifyData(Stream data, byte[] signature, System.Security.Cryptography.HashAlgorithmName hashAlgorithm);
 
-        
-        
+
         private static System.Security.Cryptography.HashAlgorithm GetHashAlgorithm(System.Security.Cryptography.HashAlgorithmName hashAlgorithmName)
         {
             if (hashAlgorithmName == System.Security.Cryptography.HashAlgorithmName.MD5)
@@ -189,6 +243,7 @@ namespace AuthTest.Crypto
                 return (System.Security.Cryptography.HashAlgorithm) System.Security.Cryptography.SHA384.Create();
             if (hashAlgorithmName == System.Security.Cryptography.HashAlgorithmName.SHA512)
                 return (System.Security.Cryptography.HashAlgorithm) System.Security.Cryptography.SHA512.Create();
+
             throw new System.Security.Cryptography.CryptographicException($"Unknown hash algorithm \"{hashAlgorithmName.Name}\".");
         }
         
@@ -196,9 +251,13 @@ namespace AuthTest.Crypto
         protected override byte[] HashData(byte[] data, int offset, int count,
             System.Security.Cryptography.HashAlgorithmName hashAlgorithm)
         {
+            System.Convert.ToBase64String(data);
+            string mydata = System.Text.Encoding.UTF8.GetString(data);
+            System.Console.WriteLine(mydata);
+
             using (System.Security.Cryptography.HashAlgorithm hashAlgorithm1 = 
                 GetHashAlgorithm(hashAlgorithm))
-                return hashAlgorithm1.ComputeHash(data);
+                return hashAlgorithm1.ComputeHash(data, offset, count);
         }
         
         

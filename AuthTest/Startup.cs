@@ -71,15 +71,14 @@ namespace AuthTest
             // services.ConfigureExternalCookie()
             // services.ConfigureApplicationCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts) {});
             
-            Microsoft.IdentityModel.Tokens.SecurityKey signingKey = AuthTest.Crypto.Simple.GetRsaKey();
+            Microsoft.IdentityModel.Tokens.SecurityKey signingKey = AuthTest.Cryptography.SecurityKeyRepo.GetRsaKey();
+
+            signingKey = AuthTest.Cryptography.SecurityKeyRepo.GetBouncyRsaKey();
+
+            // signingKey = AuthTest.Cryptography.SecurityKeyRepo.GetECDsaKey();
+            // signingKey = AuthTest.Cryptography.SecurityKeyRepo.GetBouncyEcdsaKey();
             
-            // signingKey = AuthTest.Crypto.Simple.GetBouncyRsaKey();
-            
-            // signingKey = AuthTest.Crypto.Simple.GetECDsaKey();
-            signingKey = AuthTest.Crypto.Simple.GetBouncyEcdsaKey();
-            
-            
-            
+
             Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters =
                     new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
@@ -173,7 +172,9 @@ namespace AuthTest
                 opts.TicketDataFormat = new NiHaoCookie.JwtCookieDataFormat(
                      // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256, 
                      // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.RsaSha256, 
-                    Microsoft.IdentityModel.Tokens.SecurityAlgorithms.EcdsaSha512, 
+                     // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.RsaSha384,
+                     Microsoft.IdentityModel.Tokens.SecurityAlgorithms.RsaSha512,
+                     // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.EcdsaSha512, // lower not allowed
                      tokenValidationParameters,
                     (int)opts.ExpireTimeSpan.TotalMinutes // 900 = 60*15 = tokenLifetime - in minutes
                 ); 
