@@ -1,9 +1,5 @@
 ﻿
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Security.Claims;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration; // Not yet used
@@ -12,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection; // Various extensions
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder; // Various extensions
 using Microsoft.AspNetCore.Hosting; // env.IsDevelopment
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -39,7 +36,7 @@ namespace AuthTest
         } // End Constructor 
 
 
-        IServiceProvider Microsoft.AspNetCore.Hosting.IStartup.ConfigureServices(
+        System.IServiceProvider Microsoft.AspNetCore.Hosting.IStartup.ConfigureServices(
             Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {
 
@@ -68,35 +65,21 @@ namespace AuthTest
                 , Microsoft.AspNetCore.Http.HttpContextAccessor>();
 
             services.AddTransient<AuthTest.Services.IMailService, AuthTest.Services.MailService>();
-
-
+            
+            
             // https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x
             // services.ConfigureExternalCookie()
             // services.ConfigureApplicationCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts) {});
             
-
-            Microsoft.IdentityModel.Tokens.SecurityKey signingKey = null;
-
-            // RSACryptoServiceProvider x = new System.Security.Cryptography.RSACryptoServiceProvider();
-            // Microsoft.IdentityModel.Tokens.RsaSecurityKey rsakew = 
-            // new Microsoft.IdentityModel.Tokens.RsaSecurityKey(x);
-
-            // var securityKey = new InMemorySymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("sec"));
-
-            Microsoft.IdentityModel.Tokens.SymmetricSecurityKey symkey =
-                new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-                // The algorithm: 'HS256' requires the SecurityKey.KeySize to be 
-                // greater than '128' bits. KeySize reported: '32'.
-                // ==> key-text >= 16 bytes
-                // System.Text.Encoding.UTF8.GetBytes("test")
-                System.Text.Encoding.UTF8.GetBytes("i am a top secret password") 
-            );
-
-
-            signingKey = symkey;
-
-            string securityAlgorithm = Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256;
-
+            Microsoft.IdentityModel.Tokens.SecurityKey signingKey = AuthTest.Crypto.Simple.GetRsaKey();
+            
+            // signingKey = AuthTest.Crypto.Simple.GetBouncyRsaKey();
+            
+            // signingKey = AuthTest.Crypto.Simple.GetECDsaKey();
+            signingKey = AuthTest.Crypto.Simple.GetBouncyEcdsaKey();
+            
+            
+            
             Microsoft.IdentityModel.Tokens.TokenValidationParameters tokenValidationParameters =
                     new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
@@ -107,7 +90,7 @@ namespace AuthTest
                         // Validate the JWT Issuer (iss) claim
                         ValidateIssuer = true,
                         ValidIssuer = "ExampleIssuer",
-
+                        
                         // Validate the JWT Audience (aud) claim
                         ValidateAudience = true,
                         ValidAudience = "ExampleAudience",
@@ -128,19 +111,19 @@ namespace AuthTest
                 {
                     options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
-
+                    
                     options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
-
+                    
                     options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
-
+                    
                     options.DefaultSignInScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
-
+                    
                     options.DefaultSignOutScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
-
+                    
                     options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
                 }
@@ -152,29 +135,29 @@ namespace AuthTest
                 opts.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Account/Logout/");
                 opts.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
                 
-
+                
                 opts.Cookie = new Microsoft.AspNetCore.Http.CookieBuilder()
                 {
                     // Domain = "localhost:64972",
                     Domain = "localhost",
                     // Path = null,
-                    Name = "SecurityByObscurityDoesntWork",
+                    Name = "IANA-JOSE-JWT",
                     Expiration = new System.TimeSpan(15, 0, 0),
                     HttpOnly = true,
                     SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest,
                 };
-
+                
                 opts.SlidingExpiration = true;
                 opts.ExpireTimeSpan = new System.TimeSpan(15, 0, 0);
-
-
+                
+                
                 // https://long2know.com/2017/05/migrating-from-net-core-1-1-to-2-0/
                 opts.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents()
                 {
                     OnValidatePrincipal = async context => { await ValidateAsync(context); }
                 };
-
-
+                
+                
                 /*
                 //AuthenticationScheme = "MyCookieMiddlewareInstance",
                 // opts.Cookie = null;
@@ -185,15 +168,18 @@ namespace AuthTest
                 opts.Cookie.HttpOnly = true;
                 opts.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
                 */
-
-
+                
+                
                 opts.TicketDataFormat = new NiHaoCookie.JwtCookieDataFormat(
-                    securityAlgorithm, tokenValidationParameters,
+                     // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256, 
+                     // Microsoft.IdentityModel.Tokens.SecurityAlgorithms.RsaSha256, 
+                    Microsoft.IdentityModel.Tokens.SecurityAlgorithms.EcdsaSha512, 
+                     tokenValidationParameters,
                     (int)opts.ExpireTimeSpan.TotalMinutes // 900 = 60*15 = tokenLifetime - in minutes
                 ); 
-
+                
                 // opts.DataProtectionProvider = null;
-
+                
                 // AutomaticAuthenticate = true,
                 // AutomaticChallenge = true,
             })
@@ -243,8 +229,8 @@ namespace AuthTest
                 
             ;
             */
-
-
+            
+            
             services.AddAntiforgery(
                  delegate (Microsoft.AspNetCore.Antiforgery.AntiforgeryOptions options)
                  {
@@ -254,9 +240,8 @@ namespace AuthTest
                      options.Cookie.Name = "foobr";
                  }
             );
-
-
-
+            
+            
             // https://stackoverflow.com/questions/40097229/when-i-develop-asp-net-core-mvc-which-service-should-i-use-addmvc-or-addmvccor
             // AddMvcCore(), as the name implies, only adds core components, 
             // requiring you to add any other middleware(needed for your project) by yourself.
@@ -272,11 +257,11 @@ namespace AuthTest
                                      .RequireAuthenticatedUser()
                                      // .AddRequirements( new NoBannedIPsRequirement(new HashSet<string>() { "127.0.0.1", "0.0.0.1" } ))
                                      .Build();
-
+                    
                     config.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter(policy));
                 }
             );
-
+            
             return services.BuildServiceProvider();
         } // End Function ConfigureServices 
         
@@ -291,23 +276,22 @@ namespace AuthTest
         void Microsoft.AspNetCore.Hosting.IStartup.Configure(IApplicationBuilder app)
         {
             this.m_Application = app;
-
+            
             Microsoft.Extensions.Logging.ILoggerFactory loggerFactory = app.ApplicationServices.
                 GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
-
+            
             Services.IMailService mailService = app.ApplicationServices.
                 GetRequiredService<Services.IMailService>();
-
+            
             Microsoft.AspNetCore.Hosting.IHostingEnvironment env = app.ApplicationServices.
                 GetRequiredService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>();
-
+            
             Microsoft.AspNetCore.Http.IHttpContextAccessor httpContext = app.ApplicationServices.
                 GetRequiredService<Microsoft.AspNetCore.Http.IHttpContextAccessor>();
             
-
             Services.IPathProvider pathProvider = app.ApplicationServices.
                 GetRequiredService<Services.IPathProvider>();
-
+            
             this.ConfigureVirtualDirectory(app, loggerFactory, mailService, env, httpContext, pathProvider);
         } // End Function Configure 
         
