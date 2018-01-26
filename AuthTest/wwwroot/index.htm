@@ -17,6 +17,60 @@
 
 </head>
 <body>
+
+<input type="file" onchange="previewFile()" />
+<br />
+<img src="" height="200" alt="Image preview..." />
+
+
+<script>
+    // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+    // http://dinbror.dk/blog/how-to-download-an-inline-svg-as-jpg-or-png/
+    function previewFile()
+    {
+        var preview = document.querySelector('img');
+        var file = document.querySelector('input[type=file]').files[0];
+        var reader = new FileReader();
+        
+        reader.addEventListener("load", function ()
+        {
+            preview.src = reader.result;
+        }, false);
+        
+        if (file)
+        {
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    
+    function myImage()
+    {
+        var image = new Image();
+        
+        image.onload = function () {
+            ctx.drawImage(image, dx, dy, dWidth, dHeight);
+
+            // toBlob(callback, mimeType, qualityArgument);
+            canvas.toBlob(function (blob) {
+                var newImg = document.createElement("img"),
+                    url = URL.createObjectURL(blob);
+                newImg.onload = function () {
+                    URL.revokeObjectURL(url);
+                };
+                newImg.src = url;
+            }, "image/jpeg", 0.8);
+
+        }
+    }
+    
+    
+</script>
+
+
+
+
+
     
     <div class="rect" style="background-color: #00FFFF;"></div><!-- Cyan-->
     <div class="rect" style="background-color: #FF00FF;"></div><!-- Magenta-->

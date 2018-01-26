@@ -1,9 +1,11 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Internal.Cryptography.AsymmetricAlgorithmHelpers
-// Assembly: System.Security.Cryptography.Algorithms, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// MVID: 79445BD0-C274-4B93-85E4-91E39E026034
-// Assembly location: /usr/share/dotnet/shared/Microsoft.NETCore.App/2.0.0/System.Security.Cryptography.Algorithms.dll
+﻿
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
+
+// master/src/Common/src/System/Security/Cryptography/AsymmetricAlgorithmHelpers.cs
+// https://github.com/dotnet/corefx/tree/master/src/Common/src/Internal/Cryptography
 
 
 namespace AuthTest.Cryptography
@@ -17,6 +19,7 @@ namespace AuthTest.Cryptography
         public static byte[] ConvertIeee1363ToDer(byte[] input)
         {
             int num = input.Length / 2;
+            
             return DerEncoder.ConstructSequence(DerEncoder.SegmentedEncodeUnsignedInteger(input, 0, num), DerEncoder.SegmentedEncodeUnsignedInteger(input, num, num));
         }
         

@@ -388,6 +388,8 @@ namespace AuthTest.Controllers
         } // End Action Logout 
 
 
+        
+        
         [Microsoft.AspNetCore.Authorization.AllowAnonymous]
         public ContentResult Forbidden()
         {

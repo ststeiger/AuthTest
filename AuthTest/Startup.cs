@@ -11,13 +11,18 @@ using Microsoft.AspNetCore.Hosting; // env.IsDevelopment
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 
 namespace AuthTest
 {
 
+    public class MyUser
+    {
+    }
 
-    // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection
+
+// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection
     public class Startup : Microsoft.AspNetCore.Hosting.IStartup
     {
         private IHostingEnvironment HostingEnvironment { get; set; }
@@ -48,13 +53,29 @@ namespace AuthTest
             //            .AddConsole()
             //            .AddDebug()
             //        ;
-
+            
             //    }
             //);
-
+            
             // Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions
             //    .Configure<Mail.SmtpConfig>(services, Configuration.GetSection("Smtp"));
+            
+            // https://stackoverflow.com/questions/33825058/no-authentication-handler-is-configured-to-handle-the-scheme-automatic
 
+            /*
+            services.AddIdentity<MyUser, Microsoft.AspNetCore.Identity.IdentityRole>(
+                    delegate(Microsoft.AspNetCore.Identity.IdentityOptions options)
+                    {
+                        
+                        // options.Cookies.ApplicationCookie.AuthenticationScheme = 
+                        //Microsoft.AspNetCore.Authentication.Cookies
+                        //        .CookieAuthenticationDefaults.AuthenticationScheme;
+                    }
+                    
+                    
+                );
+            */
+            
             services.Configure<Mail.SmtpConfig>(Configuration.GetSection("Smtp"));
 
 
@@ -107,11 +128,15 @@ namespace AuthTest
 
             services.AddAuthentication(
                 delegate (Microsoft.AspNetCore.Authentication.AuthenticationOptions options)
-                {
+                {   
+                    
                     options.DefaultScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
                     
                     options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.Cookies
+                        .CookieAuthenticationDefaults.AuthenticationScheme;
+                    
+                    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies
                         .CookieAuthenticationDefaults.AuthenticationScheme;
                     
                     options.DefaultForbidScheme = Microsoft.AspNetCore.Authentication.Cookies
@@ -121,19 +146,15 @@ namespace AuthTest
                         .CookieAuthenticationDefaults.AuthenticationScheme;
                     
                     options.DefaultSignOutScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
-                    
-                    options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.Cookies
-                        .CookieAuthenticationDefaults.AuthenticationScheme;
+                        .CookieAuthenticationDefaults.AuthenticationScheme;      
                 }
             )
             // 
             .AddCookie(delegate (Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions opts)
-            {
+            {   
                 opts.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login/");
                 opts.LogoutPath = new Microsoft.AspNetCore.Http.PathString("/Account/Logout/");
                 opts.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Forbidden/");
-                
                 
                 opts.Cookie = new Microsoft.AspNetCore.Http.CookieBuilder()
                 {
@@ -153,7 +174,28 @@ namespace AuthTest
                 // https://long2know.com/2017/05/migrating-from-net-core-1-1-to-2-0/
                 opts.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents()
                 {
-                    OnValidatePrincipal = async context => { await ValidateAsync(context); }
+                    OnValidatePrincipal = async delegate(CookieValidatePrincipalContext context)
+                        {
+                            System.Console.WriteLine(context);
+                            // context.coo
+                            
+                            //string userSessionToken  = context.Principal.Claims
+                            //    .FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+
+                            string userSessionToken = null;
+                            
+                            if(string.IsNullOrEmpty(userSessionToken))
+                            {
+                                /*
+                                await context.HttpContext.Authentication.SignOutAsync(
+                                    Microsoft.AspNetCore.Authentication.Cookies
+                                        .CookieAuthenticationDefaults.AuthenticationScheme);
+                                */
+                                context.RejectPrincipal();
+                            }
+                            
+                            await Task.CompletedTask;
+                        }
                 };
                 
                 
@@ -215,6 +257,7 @@ namespace AuthTest
             ;
 
 
+            
             // services.ConfigureApplicationCookie(options => options.LoginPath = "/Account/LogIn");
 
             /*
@@ -238,7 +281,7 @@ namespace AuthTest
                      // https://damienbod.com/2017/05/09/anti-forgery-validation-with-asp-net-core-mvc-and-angular/
                      options.HeaderName = "X-XSRF-TOKEN";
                      //options.CookieDomain = "localhost";
-                     options.Cookie.Name = "foobr";
+                     options.Cookie.Name = "XSRF";
                  }
             );
             
@@ -265,13 +308,6 @@ namespace AuthTest
             
             return services.BuildServiceProvider();
         } // End Function ConfigureServices 
-        
-        
-        private Task ValidateAsync(CookieValidatePrincipalContext context)
-        {   
-            return Task.FromResult(true);
-            // throw new NotImplementedException();
-        }
         
         
         void Microsoft.AspNetCore.Hosting.IStartup.Configure(IApplicationBuilder app)
@@ -400,7 +436,7 @@ namespace AuthTest
 
 
             app.UseAuthentication();
-
+            
             // https://github.com/aspnet/Security/issues/1310
             // AppContext.TargetFrameworkName
 

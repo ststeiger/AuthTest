@@ -332,7 +332,7 @@ namespace AuthTest.Cryptography
                 $"Unknown hash algorithm \"{hashAlgorithmName.Name}\"."
             );
         } // End Function GetBouncyAlgorithm  
-
+        
 
         // Call VerifyHash internally
         // public bool VerifyData(byte[] data, byte[] signature, HashAlgorithmName hashAlgorithm, RSASignaturePadding padding);
@@ -448,21 +448,39 @@ namespace AuthTest.Cryptography
         protected override byte[] HashData(byte[] data, int offset, int count,
             System.Security.Cryptography.HashAlgorithmName hashAlgorithm)
         {
-            using (System.Security.Cryptography.HashAlgorithm hashAlgorithm1 =
-                GetHashAlgorithm(hashAlgorithm))
-                return hashAlgorithm1.ComputeHash(data, offset, count);
+            Org.BouncyCastle.Crypto.IDigest digest = GetBouncyAlgorithm(hashAlgorithm);
+            
+            byte[] retValue = new byte[digest.GetDigestSize()];
+            digest.BlockUpdate(data, offset, count);
+            digest.DoFinal(retValue, 0);
+            return retValue;
+            
+            // using (System.Security.Cryptography.HashAlgorithm hashAlgorithm1 =
+            //     GetHashAlgorithm(hashAlgorithm))
+            //     return hashAlgorithm1.ComputeHash(data, offset, count);
         } // End Function HashData 
 
 
         protected override byte[] HashData(System.IO.Stream data,
             System.Security.Cryptography.HashAlgorithmName hashAlgorithm)
         {
-            using (System.Security.Cryptography.HashAlgorithm hashAlgorithm1 =
-                GetHashAlgorithm(hashAlgorithm))
-                return hashAlgorithm1.ComputeHash(data);
+            Org.BouncyCastle.Crypto.IDigest digest = GetBouncyAlgorithm(hashAlgorithm);
+            
+            byte[] buffer = new byte[4096];
+            int cbSize;
+            while ((cbSize = data.Read(buffer, 0, buffer.Length)) > 0)
+                digest.BlockUpdate(buffer, 0, cbSize);
+            
+            byte[] hash = new byte[digest.GetDigestSize()];
+            digest.DoFinal(hash, 0);
+            return hash;
+            
+            // using (System.Security.Cryptography.HashAlgorithm hashAlgorithm1 =
+            //     GetHashAlgorithm(hashAlgorithm))
+            //     return hashAlgorithm1.ComputeHash(data);
         } // End Function HashData 
-
-
+        
+        
     }
     
     
