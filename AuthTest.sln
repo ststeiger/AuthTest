@@ -3,11 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthTest", "AuthTest\AuthTest.csproj", "{1E3ED1D4-CE59-497C-AADA-8C954E3524C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthTest", "AuthTest\AuthTest.csproj", "{1E3ED1D4-CE59-497C-AADA-8C954E3524C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Novell.Directory.Ldap", "Novell.Directory.Ldap\Novell.Directory.Ldap.csproj", "{2D19DEAF-1592-41E8-90F1-557A2FC892F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Novell.Directory.Ldap", "Novell.Directory.Ldap\Novell.Directory.Ldap.csproj", "{2D19DEAF-1592-41E8-90F1-557A2FC892F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateKeys", "CreateKeys\CreateKeys.csproj", "{5C58EF9C-3F4C-4D64-BEF6-86F8D7B012E4}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BouncyCastle", "BouncyCastle\BouncyCastle.shproj", "{154D8A0B-2DB4-4475-B329-65B055120E4A}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		BouncyCastle\BouncyCastle.projitems*{154d8a0b-2db4-4475-b329-65b055120e4a}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -21,6 +28,10 @@ Global
 		{2D19DEAF-1592-41E8-90F1-557A2FC892F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D19DEAF-1592-41E8-90F1-557A2FC892F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D19DEAF-1592-41E8-90F1-557A2FC892F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C58EF9C-3F4C-4D64-BEF6-86F8D7B012E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C58EF9C-3F4C-4D64-BEF6-86F8D7B012E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C58EF9C-3F4C-4D64-BEF6-86F8D7B012E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C58EF9C-3F4C-4D64-BEF6-86F8D7B012E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

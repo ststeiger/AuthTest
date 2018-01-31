@@ -17,8 +17,7 @@ namespace AuthTest.Cryptography
             Org.BouncyCastle.Crypto.Generators.ECKeyPairGenerator gen = 
                 new Org.BouncyCastle.Crypto.Generators.ECKeyPairGenerator();
 
-            Org.BouncyCastle.Security.SecureRandom secureRandom = 
-                new Org.BouncyCastle.Security.SecureRandom();
+            Org.BouncyCastle.Security.SecureRandom secureRandom = new Org.BouncyCastle.Security.SecureRandom();
 
             // https://github.com/bcgit/bc-csharp/blob/master/crypto/src/asn1/sec/SECNamedCurves.cs#LC1096
             Org.BouncyCastle.Asn1.X9.X9ECParameters ps =

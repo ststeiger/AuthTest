@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;PORTABLE;NO_THREADS;NEW_REFLECTION;SYS_RUNTIME;NETCOREAPP2_0;</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;PORTABLE;NO_THREADS;NEW_REFLECTION;SYS_RUNTIME;NETCOREAPP2_0;</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\BouncyCastle\BouncyCastle.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <Compile Remove="NonBackdooredSecureRandom.cs" />
+  </ItemGroup>
+
+</Project>
