@@ -11,7 +11,7 @@ namespace CreateKeys
         {
             // http://safecurves.cr.yp.to/
             var kpECDSA = ECDSA.GenerateKeyPair("sect571r1");
-            IO.WritePrivatePublic(kpECDSA);
+            IO.WritePrivatePublic(kpECDSA, "ecdsa");
 
             return "";
         } // End Function GenerateECDSA 
@@ -20,7 +20,7 @@ namespace CreateKeys
         public static string GenerateRSA()
         {
             var kpRSA = RSA.GenerateKeyPair(4096);
-            IO.WritePrivatePublic(kpRSA);
+            IO.WritePrivatePublic(kpRSA, "rsa");
 
             return "";
         } // End Function GenerateRSA 

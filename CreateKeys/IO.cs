@@ -9,7 +9,7 @@ namespace CreateKeys
 
 
 
-        public static void WritePrivatePublic(Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair keyPair)
+        public static void WritePrivatePublic(Org.BouncyCastle.Crypto.AsymmetricCipherKeyPair keyPair, string fn)
         {
             string privateKey = null;
             string publicKey = null;
@@ -36,7 +36,7 @@ namespace CreateKeys
             } // End Using textWriter 
 
 
-            // // This writes the same as private key, not both
+            //  // This writes the same as private key, not both
             //using (System.IO.TextWriter textWriter = new System.IO.StringWriter())
             //{
             //    Org.BouncyCastle.OpenSsl.PemWriter pemWriter = new Org.BouncyCastle.OpenSsl.PemWriter(textWriter);
@@ -49,9 +49,9 @@ namespace CreateKeys
             System.Console.WriteLine(privateKey);
             System.Console.WriteLine(publicKey);
             //System.Console.WriteLine(bothKeys);
-
-
-
+            System.IO.File.WriteAllText("id_" + fn + ".priv", privateKey, Encoding.UTF8);
+            System.IO.File.WriteAllText("id_" + fn + ".pub", privateKey, Encoding.UTF8);
+            
             // Org.BouncyCastle.Crypto.AsymmetricKeyParameter pk = ReadPrivateKey(privateKey);
             // Org.BouncyCastle.Crypto.AsymmetricKeyParameter pubKey = ReadPublicKey(publicKey);
 
